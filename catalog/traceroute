@@ -1,0 +1,17 @@
+#! /usr/bin/env nix-shell
+#! nix-shell -i bash -p inetutils
+# shellcheck shell=bash
+#
+## Traceroute to a host
+# host: Host to traceroute to
+# timeout: Timeout in seconds [30]
+
+HOST=$1
+TIMEOUT=${2:-30}
+
+cat <<'EOF' > /etc/protocols
+ip	0	IP		# internet protocol, pseudo protocol number
+icmp	1	ICMP		# internet control message protocol
+EOF
+
+timeout "$TIMEOUT" traceroute "$HOST"

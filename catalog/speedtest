@@ -1,0 +1,7 @@
+#! /usr/bin/env nix-shell
+#! nix-shell -i bash -p speedtest-cli
+# shellcheck shell=bash
+#
+## Run an Ookla speedtest
+
+speedtest
