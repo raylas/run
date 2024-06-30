@@ -21,7 +21,7 @@
             inherit version;
             src = ./.;
             subPackages = [ "cmd/run" ];
-            vendorHash = "sha256-ks1m+zyVWDJ+Sbc1ahV+80XBAIJdrW+OapdfmJrtpKU=";
+            vendorHash = "sha256-hCeOLtylQ1Jb1u43pB+2dHU3dB2CsvlOfdusmYNSxLw=";
           };
         };
 
