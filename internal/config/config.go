@@ -17,10 +17,12 @@ func LoadDefaults() {
 		panic(err)
 	}
 
-	// Docker
-	// viper.SetDefault("docker.host", "unix://"+homeDir+".colima/default/docker.sock")
-	viper.SetDefault("docker.api.version", "1.43")
+	// run
+	viper.SetDefault("image", "ghcr.io/nixos/nix")
+	viper.SetDefault("entrypoint", []string{"bash", "-c"})
+	viper.SetDefault("command", "echo %s | base64 -d -i > /run && chmod +x /run && /run %s")
 
 	// Kubernetes
 	viper.SetDefault("kubernetes.config_path", homeDir+"/.kube/config")
+	viper.SetDefault("kubernetes.namespace", "default")
 }

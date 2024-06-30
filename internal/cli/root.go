@@ -1,11 +1,15 @@
 package cli
 
 import (
+	"fmt"
+	"log"
 	"os"
 
 	"github.com/linecard/run/catalog"
 	"github.com/linecard/run/internal/cli/run"
 	"github.com/linecard/run/internal/config"
+	"github.com/linecard/run/internal/output"
+	"github.com/linecard/run/internal/parse"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -25,11 +29,23 @@ func init() {
 
 	scripts, err := catalog.List()
 	if err != nil {
-		os.Exit(1)
+		log.Fatal(err)
 	}
 
-	for _, script := range scripts {
-		rootCmd.AddCommand(run.NewScriptCmd(script))
+	for _, s := range scripts {
+		contents, err := catalog.Read(s)
+		if err != nil {
+			fmt.Println(output.Colorize(output.Red, err.Error()))
+			continue
+		}
+
+		desc, args, err := parse.Args(contents)
+		if err != nil {
+			fmt.Println(output.Colorize(output.Red, err.Error()))
+			continue
+		}
+
+		rootCmd.AddCommand(run.NewScriptCmd(s, desc, args))
 	}
 
 	rootCmd.CompletionOptions.HiddenDefaultCmd = true
@@ -40,5 +56,6 @@ func init() {
 func initConfig() {
 	config.LoadDefaults()
 
+	viper.SetEnvPrefix("run")
 	viper.AutomaticEnv()
 }

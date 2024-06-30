@@ -2,6 +2,7 @@ package catalog
 
 import (
 	"embed"
+	"fmt"
 )
 
 //go:embed *
@@ -26,10 +27,14 @@ func List() ([]string, error) {
 }
 
 func Read(name string) ([]byte, error) {
-	file, err := catalog.ReadFile(name)
+	bytes, err := catalog.ReadFile(name)
 	if err != nil {
 		return nil, err
 	}
 
-	return file, nil
+	if len(bytes) == 0 {
+		return nil, fmt.Errorf("script has no bytes: %s", name)
+	}
+
+	return bytes, nil
 }

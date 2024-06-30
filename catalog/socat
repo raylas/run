@@ -1,0 +1,32 @@
+#! /usr/bin/env nix-shell
+#! nix-shell -i bash -p socat
+# shellcheck shell=bash
+#
+## Proxy a TCP connection
+# host: Host to proxy to
+# port: Port to proxy to
+# proxyPort: Port to listen on [10205]
+# timeout: Timeout in seconds [1800]
+
+TARGET_HOST=$1
+TARGET_PORT=$2
+
+PROXY_PORT=${3:-10205}
+TIMEOUT=${4:-1800}
+
+shutdown() {
+  kill $SOCAT_PID 2>/dev/null
+  exit 0  # Exit cleanly
+}
+trap shutdown SIGINT SIGTERM
+
+socat TCP4-LISTEN:"$PROXY_PORT",fork,reuseaddr TCP4:"$TARGET_HOST":"$TARGET_PORT" & SOCAT_PID=$!
+
+(
+  sleep "$TIMEOUT"
+  shutdown
+) &
+
+wait $SOCAT_PID
+
+shutdown

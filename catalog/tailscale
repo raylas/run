@@ -1,0 +1,40 @@
+#! /usr/bin/env nix-shell
+#! nix-shell -i bash -p tailscale
+# shellcheck shell=bash
+#
+## Launch a Tailscale node
+# authKey: Tailscale authentication key
+# routes: Routes to advertise
+# hostname: Hostname to advertise [$(hostname)]
+# tags: Tags to advertise
+
+AUTH_KEY=$1
+ROUTES=${2:-}
+HOSTNAME=${3:-$(hostname)}
+TAGS=${4:-}
+
+shutdown() {
+  tailscale down
+  sleep 3
+  exit 0  # Exit cleanly
+}
+trap shutdown SIGINT SIGTERM
+
+# Start tailscaled
+tailscaled \
+  --state=/var/lib/tailscale/tailscaled.state \
+  --socket=/var/run/tailscale/tailscaled.sock \
+  --tun=userspace-networking &
+
+# Start tailscale
+tailscale \
+  --socket=/var/run/tailscale/tailscaled.sock \
+  up \
+  --authkey="$AUTH_KEY"?ephemeral=true\&preauthorized=true \
+  --accept-routes=false \
+  --accept-dns=false \
+  --hostname="$HOSTNAME" \
+  --advertise-tags="$TAGS" \
+  --advertise-routes="$ROUTES"
+
+sleep infinity

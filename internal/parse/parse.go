@@ -1,11 +1,9 @@
-package script
+package parse
 
 import (
 	"bufio"
 	"regexp"
 	"strings"
-
-	"github.com/linecard/run/catalog"
 )
 
 type Arg struct {
@@ -14,12 +12,7 @@ type Arg struct {
 	Desc  string
 }
 
-func ParseSpec(name string) (*string, map[int]Arg, error) {
-	script, err := catalog.Read(name)
-	if err != nil {
-		return nil, nil, err
-	}
-
+func Args(script []byte) (string, map[int]Arg, error) {
 	scanner := bufio.NewScanner(strings.NewReader(string(script)))
 
 	rd := regexp.MustCompile(`(?m)^## (.*)$`)
@@ -50,8 +43,8 @@ func ParseSpec(name string) (*string, map[int]Arg, error) {
 	}
 
 	if err := scanner.Err(); err != nil {
-		return nil, nil, err
+		return "", nil, err
 	}
 
-	return &desc, args, nil
+	return desc, args, nil
 }

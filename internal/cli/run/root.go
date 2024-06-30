@@ -5,8 +5,10 @@ import (
 )
 
 var rootCmdFlags struct {
-	attach bool
-	local  bool
+	attach  bool
+	bind    bool
+	local   bool
+	secrets []string
 }
 
 func NewRootCmd() *cobra.Command {
@@ -22,7 +24,9 @@ func NewRootCmd() *cobra.Command {
 	}
 
 	cmd.PersistentFlags().BoolVarP(&rootCmdFlags.attach, "attach", "a", false, "Attach to running script")
+	cmd.PersistentFlags().BoolVarP(&rootCmdFlags.bind, "bind", "b", false, "Bind pod to host network")
 	cmd.PersistentFlags().BoolVarP(&rootCmdFlags.local, "local", "l", false, "Run script locally")
+	cmd.PersistentFlags().StringSliceVarP(&rootCmdFlags.secrets, "secret", "s", []string{}, "Secrets to mount into environment")
 
 	return cmd
 }
