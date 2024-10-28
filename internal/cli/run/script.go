@@ -23,7 +23,8 @@ func NewScriptCmd(name, desc string, scriptArgs map[int]parse.Arg) *cobra.Comman
 			}
 
 			var flagArgs = []string{}
-			for _, arg := range scriptArgs {
+			for pos := 0; pos < len(scriptArgs); pos++ {
+				arg := scriptArgs[pos]
 				flagArgs = append(flagArgs, cmd.Flag(arg.Name).Value.String())
 			}
 

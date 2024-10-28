@@ -31,6 +31,9 @@ func Run(ctx context.Context, attach, hostNetwork bool, secrets []string, cmd, n
 	spec := corev1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: nameRoot + "-" + timestamp[len(timestamp)-6:],
+			Labels: map[string]string{
+				"run.linecard.io/script": name,
+			},
 		},
 		Spec: corev1.PodSpec{
 			Containers: []corev1.Container{
