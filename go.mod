@@ -1,4 +1,4 @@
-module github.com/linecard/run
+module github.com/linecard/job
 
 go 1.22.1
 

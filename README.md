@@ -1,9 +1,9 @@
-# run
+# job
 
 Run autosemantic scripts in a Kubernetes context, or locally.
 
 ```bash
-run [command]
+job [command]
 ```
 
 ## Catalog

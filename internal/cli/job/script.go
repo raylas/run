@@ -1,14 +1,14 @@
-package run
+package job
 
 import (
 	"fmt"
 	"strings"
 
-	"github.com/linecard/run/catalog"
-	"github.com/linecard/run/internal/docker"
-	"github.com/linecard/run/internal/equip"
-	"github.com/linecard/run/internal/kube"
-	"github.com/linecard/run/internal/parse"
+	"github.com/linecard/job/catalog"
+	"github.com/linecard/job/internal/docker"
+	"github.com/linecard/job/internal/equip"
+	"github.com/linecard/job/internal/kube"
+	"github.com/linecard/job/internal/parse"
 	"github.com/spf13/cobra"
 )
 
@@ -47,7 +47,8 @@ func NewScriptCmd(name, desc string, scriptArgs map[int]parse.Arg) *cobra.Comman
 					cmd.Context(),
 					rootCmdFlags.attach,
 					rootCmdFlags.bind,
-					rootCmdFlags.secrets,
+					rootCmdFlags.secretEnv,
+					rootCmdFlags.secretFile,
 					equip.Pack(script, strings.Join(flagArgs, " ")),
 					name,
 				)

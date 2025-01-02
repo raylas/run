@@ -1,6 +1,6 @@
 package main
 
-import "github.com/linecard/run/internal/cli"
+import "github.com/linecard/job/internal/cli"
 
 func main() {
 	cli.Execute()

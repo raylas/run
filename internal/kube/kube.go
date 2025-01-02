@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/linecard/run/internal/output"
+	"github.com/linecard/job/internal/output"
 	"github.com/spf13/viper"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -13,7 +13,7 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 )
 
-func Run(ctx context.Context, attach, hostNetwork bool, secrets []string, cmd, name string) (string, error) {
+func Run(ctx context.Context, attach, hostNetwork bool, secretEnv, secretFile []string, cmd, name string) (string, error) {
 	config, err := clientcmd.BuildConfigFromFlags("", viper.GetString("kubernetes.config_path"))
 	if err != nil {
 		return "", err
@@ -25,12 +25,15 @@ func Run(ctx context.Context, attach, hostNetwork bool, secrets []string, cmd, n
 	}
 	pc := c.CoreV1().Pods(viper.GetString("kubernetes.namespace"))
 
-	nameRoot := "run-" + name
+	nameRoot := "job-" + name
 	timestamp := fmt.Sprint(time.Now().Unix())
 
 	spec := corev1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: nameRoot + "-" + timestamp[len(timestamp)-6:],
+			Labels: map[string]string{
+				"job.linecard.io/script": name,
+			},
 		},
 		Spec: corev1.PodSpec{
 			Containers: []corev1.Container{
@@ -38,7 +41,7 @@ func Run(ctx context.Context, attach, hostNetwork bool, secrets []string, cmd, n
 					Name:            nameRoot,
 					Image:           viper.GetString("image"),
 					ImagePullPolicy: corev1.PullIfNotPresent,
-					EnvFrom:         envFrom(secrets),
+					EnvFrom:         envFrom(secretEnv),
 					Command:         viper.GetStringSlice("entrypoint"),
 					Args:            []string{cmd},
 					Stdin:           attach,
@@ -48,6 +51,25 @@ func Run(ctx context.Context, attach, hostNetwork bool, secrets []string, cmd, n
 			HostNetwork:   hostNetwork,
 			RestartPolicy: corev1.RestartPolicyNever,
 		},
+	}
+
+	if len(secretFile) > 0 {
+		spec.Spec.Volumes = []corev1.Volume{}
+		for _, secret := range secretFile {
+			spec.Spec.Volumes = append(spec.Spec.Volumes, corev1.Volume{
+				Name: secret,
+				VolumeSource: corev1.VolumeSource{
+					Secret: &corev1.SecretVolumeSource{
+						SecretName: secret,
+					},
+				},
+			})
+
+			spec.Spec.Containers[0].VolumeMounts = append(spec.Spec.Containers[0].VolumeMounts, corev1.VolumeMount{
+				Name:      secret,
+				MountPath: "/mnt/" + secret,
+			})
+		}
 	}
 
 	pod, err := pc.Create(ctx, &spec, metav1.CreateOptions{})

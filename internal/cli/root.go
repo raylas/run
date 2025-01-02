@@ -5,17 +5,17 @@ import (
 	"log"
 	"os"
 
-	"github.com/linecard/run/catalog"
-	"github.com/linecard/run/internal/cli/run"
-	"github.com/linecard/run/internal/config"
-	"github.com/linecard/run/internal/output"
-	"github.com/linecard/run/internal/parse"
+	"github.com/linecard/job/catalog"
+	"github.com/linecard/job/internal/cli/job"
+	"github.com/linecard/job/internal/config"
+	"github.com/linecard/job/internal/output"
+	"github.com/linecard/job/internal/parse"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-var rootCmd = run.NewRootCmd()
+var rootCmd = job.NewRootCmd()
 
 func Execute() {
 	err := rootCmd.Execute()
@@ -45,7 +45,7 @@ func init() {
 			continue
 		}
 
-		rootCmd.AddCommand(run.NewScriptCmd(s, desc, args))
+		rootCmd.AddCommand(job.NewScriptCmd(s, desc, args))
 	}
 
 	rootCmd.CompletionOptions.HiddenDefaultCmd = true
@@ -56,6 +56,6 @@ func init() {
 func initConfig() {
 	config.LoadDefaults()
 
-	viper.SetEnvPrefix("run")
+	viper.SetEnvPrefix("job")
 	viper.AutomaticEnv()
 }
