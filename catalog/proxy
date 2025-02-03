@@ -1,0 +1,12 @@
+#! /usr/bin/env nix-shell
+#! nix-shell -i bash -p '(import (fetchTarball "https://github.com/footgunz/proxbox/archive/main.tar.gz") {})'
+# shellcheck shell=bash
+#
+## Start a proxy server
+# http: HTTP proxy server [8889]
+# socks: SOCKS proxy server [8890] 
+
+HTTP=${1:-8889}
+SOCKS=${2:-8890}
+
+proxbox --http-port ${HTTP} --socks-port ${SOCKS}
