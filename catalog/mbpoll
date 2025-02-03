@@ -2,6 +2,6 @@
 #! nix-shell -i bash -p mbpoll 
 # shellcheck shell=bash
 #
-## Just a shell
+## Just a shell with mbpoll installed
 
 bash

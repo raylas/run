@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	resizeCheckInterval = time.Millisecond * 100
+	resizeCheckInterval = time.Millisecond * 20
 )
 
 func tty(ctx context.Context, c *rest.Config, cs *kubernetes.Clientset, pod *corev1.Pod) error {
