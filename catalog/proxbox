@@ -1,5 +1,5 @@
-#! /usr/bin/env nix-shell
-#! nix-shell -i bash -p '(import (fetchTarball "https://github.com/footgunz/proxbox/archive/main.tar.gz") {})'
+#! /usr/bin/env -S nix shell --extra-experimental-features "nix-command flakes" github:footgunz/proxbox --command bash
+
 # shellcheck shell=bash
 #
 ## Start a proxy server
