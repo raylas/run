@@ -6,7 +6,7 @@
       "type": "go",
       "request": "launch",
       "mode": "auto",
-      "program": "${workspaceFolder}/cmd/job/main.go"
+      "program": "${workspaceFolder}/cmd/raylas/run/main.go"
     }
   ]
 }

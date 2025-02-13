@@ -5,17 +5,17 @@ import (
 	"log"
 	"os"
 
-	"github.com/linecard/job/catalog"
-	"github.com/linecard/job/internal/cli/job"
-	"github.com/linecard/job/internal/config"
-	"github.com/linecard/job/internal/output"
-	"github.com/linecard/job/internal/parse"
+	"github.com/raylas/run/catalog"
+	runcmd "github.com/raylas/run/internal/cli/run"
+	"github.com/raylas/run/internal/config"
+	"github.com/raylas/run/internal/output"
+	"github.com/raylas/run/internal/parse"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-var rootCmd = job.NewRootCmd()
+var rootCmd = runcmd.NewRootCmd()
 
 func Execute() {
 	err := rootCmd.Execute()
@@ -45,7 +45,7 @@ func init() {
 			continue
 		}
 
-		rootCmd.AddCommand(job.NewScriptCmd(s, desc, args))
+		rootCmd.AddCommand(runcmd.NewScriptCmd(s, desc, args))
 	}
 
 	rootCmd.CompletionOptions.HiddenDefaultCmd = true
@@ -56,6 +56,6 @@ func init() {
 func initConfig() {
 	config.LoadDefaults()
 
-	viper.SetEnvPrefix("job")
+	viper.SetEnvPrefix("raylas/run")
 	viper.AutomaticEnv()
 }

@@ -1,4 +1,4 @@
-package job
+package run
 
 import (
 	"github.com/spf13/cobra"
@@ -14,7 +14,7 @@ var rootCmdFlags struct {
 
 func NewRootCmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "job",
+		Use:   "run",
 		Short: "Run autosemantic scripts",
 		Args: func(cmd *cobra.Command, args []string) error {
 			if err := cobra.ExactArgs(1)(cmd, args); err != nil {

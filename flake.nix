@@ -26,17 +26,17 @@
         rec {
           packages = {
             default = pkgs.buildGo122Module {
-              pname = "job";
+              pname = "run";
               inherit version;
               src = ./.;
-              subPackages = [ "cmd/job" ];
+              subPackages = [ "cmd/run" ];
               vendorHash = "sha256-hCeOLtylQ1Jb1u43pB+2dHU3dB2CsvlOfdusmYNSxLw=";
             };
           };
 
           apps.default = {
             type = "app";
-            program = "${packages.default}/bin/job";
+            program = "${packages.default}/bin/run";
           };
 
           devShell = pkgs.mkShell {

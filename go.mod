@@ -1,4 +1,4 @@
-module github.com/linecard/job
+module github.com/raylas/run
 
 go 1.22.1
 

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/linecard/job/internal/output"
+	"github.com/raylas/run/internal/output"
 	"github.com/spf13/viper"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -25,14 +25,14 @@ func Run(ctx context.Context, attach, hostNetwork bool, secretEnv, secretFile []
 	}
 	pc := c.CoreV1().Pods(viper.GetString("kubernetes.namespace"))
 
-	nameRoot := "job-" + name
+	nameRoot := "raylas/run-" + name
 	timestamp := fmt.Sprint(time.Now().Unix())
 
 	spec := corev1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: nameRoot + "-" + timestamp[len(timestamp)-6:],
 			Labels: map[string]string{
-				"job.linecard.io/script": name,
+				"raylas/run.linecard.io/script": name,
 			},
 		},
 		Spec: corev1.PodSpec{
