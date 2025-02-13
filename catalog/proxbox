@@ -1,0 +1,12 @@
+#! /usr/bin/env -S nix shell --extra-experimental-features "nix-command flakes" github:footgunz/proxbox --command bash
+
+# shellcheck shell=bash
+#
+## Start a proxy server
+# http: HTTP proxy server [8889]
+# socks: SOCKS proxy server [8890] 
+
+HTTP=${1:-8889}
+SOCKS=${2:-8890}
+
+proxbox --http-port ${HTTP} --socks-port ${SOCKS}

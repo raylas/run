@@ -1,0 +1,12 @@
+#! /usr/bin/env nix-shell
+#! nix-shell -i bash -p mbpoll inetutils
+# shellcheck shell=bash
+#
+## Just a shell with mbpoll installed
+
+cat <<'EOF' > /etc/protocols
+ip	0	IP		# internet protocol, pseudo protocol number
+icmp	1	ICMP		# internet control message protocol
+EOF
+
+bash
