@@ -1,6 +1,6 @@
 builds:
-  - main: ./cmd/job/main.go
-    binary: job
+  - main: ./cmd/run/main.go
+    binary: run
     ldflags:
       - -s -w
     goos:

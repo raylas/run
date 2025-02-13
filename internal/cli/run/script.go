@@ -1,14 +1,14 @@
-package job
+package run
 
 import (
 	"fmt"
 	"strings"
 
-	"github.com/linecard/job/catalog"
-	"github.com/linecard/job/internal/docker"
-	"github.com/linecard/job/internal/equip"
-	"github.com/linecard/job/internal/kube"
-	"github.com/linecard/job/internal/parse"
+	"github.com/raylas/run/catalog"
+	"github.com/raylas/run/internal/docker"
+	"github.com/raylas/run/internal/equip"
+	"github.com/raylas/run/internal/kube"
+	"github.com/raylas/run/internal/parse"
 	"github.com/spf13/cobra"
 )
 
