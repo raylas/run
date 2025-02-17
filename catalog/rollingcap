@@ -1,0 +1,82 @@
+#! /usr/bin/env nix-shell
+#! nix-shell -i bash -p wireshark-cli inetutils coreutils procps util-linux
+# shellcheck shell=bash
+#
+## Start a rolling capture - will rotate by time or by file size
+# interface: interface to capture on [eth0]
+# ping:  Comma separated list of hosts to ping [not set]
+# filter: Capture filter syntax [not set]
+
+echo "Debug: Number of arguments: $#" >&2
+echo "Debug: All arguments:" >&2
+for i in $(seq 1 $#); do
+    echo "Arg $i: ${!i}" >&2
+done
+
+# Fixed values (not exposed as parameters)
+PING_INTERVAL=30
+FILES=24
+INTERVAL=3600
+FILESIZE=200
+
+# First argument is interface
+INTERFACE="${1:-eth0}"
+shift
+
+# Check if next argument is a comma-separated list (ping hosts)
+if [[ "$1" =~ ^[0-9,\.]+$ ]]; then
+    PING="$1"
+    shift
+else
+    PING=""
+fi
+
+# All remaining arguments form the filter
+FILTER="$*"
+
+
+if [ -z "$FILTER" ]; then
+    echo "Error: filter (--filter) is required" >&2
+    exit 1
+fi
+
+# Convert MB to KB for dumpcap
+FILESIZE_KB=$((FILESIZE * 1024))
+
+ping_monitor() {
+    while true; do
+        # Loop through each host in the array
+        for host in "${PING_HOSTS[@]}"; do
+            # Skip empty entries
+            if [[ -z $host ]]; then
+                continue
+            fi
+            
+            # Perform a quiet ping, suppress output
+            ping -c 1 -w 2 -q "$host" &> /dev/null
+        done
+        sleep "$PING_INTERVAL"
+    done
+}
+
+# Parse PING into array if not empty
+if [ -n "$PING" ]; then
+    # Convert comma-separated string to array
+    IFS=',' read -ra PING_HOSTS <<< "$PING"
+    # Launch ping monitor in background
+    ping_monitor &
+    # modify the filter to include the pings
+    # if the filter does not already contain icmp, add it
+    if [[ ! "$FILTER" =~ "icmp" ]]; then
+        FILTER="($FILTER) or icmp"
+    fi
+fi
+
+echo "Debug: Final values:" >&2
+echo "INTERFACE=$INTERFACE" >&2
+echo "PING=$PING" >&2
+echo "FILTER=$FILTER" >&2
+
+nohup dumpcap -b files:${FILES} -b filesize:${FILESIZE_KB} -b interval:${INTERVAL} -w /tmp/${HOSTNAME}_$(date +%Y%m%d_%H%M%S).pcap -i "$INTERFACE" -f "${FILTER}"  > /dev/null 2>&1 &    
+ 
+sleep infinity

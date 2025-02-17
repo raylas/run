@@ -47,7 +47,8 @@ func NewScriptCmd(name, desc string, scriptArgs map[int]parse.Arg) *cobra.Comman
 				pod, err := kube.Run(
 					cmd.Context(),
 					rootCmdFlags.attach,
-					rootCmdFlags.bind,
+					rootCmdFlags.bind || rootCmdFlags.capture,
+					rootCmdFlags.capture,
 					rootCmdFlags.secretEnv,
 					rootCmdFlags.secretFile,
 					equip.Pack(script, strings.Join(flagArgs, " ")),
