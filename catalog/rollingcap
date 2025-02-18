@@ -71,13 +71,14 @@ if [ -n "$PING" ]; then
     # Launch ping monitor in background
     ping_monitor &
     # modify the filter to include the pings
-    # if the filter does not already contain icmp, add it
+    # if the filter does not already contain icmp, add it so it is visible in the capture
+    # this functions as proof the device is reachable
     if [[ ! "$FILTER" =~ "icmp" ]]; then
         FILTER="($FILTER) or icmp"
     fi
 fi
 
-echo "Using Values:" >&2
+echo "Using Parameters:" >&2
 echo "INTERFACE=$INTERFACE" >&2
 echo "PING=$PING" >&2
 echo "FILTER=$FILTER" >&2
