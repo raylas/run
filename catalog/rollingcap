@@ -4,8 +4,8 @@
 #
 ## Start a rolling capture - will rotate by time or by file size
 # interface: interface to capture on [eth0]
-# ping:  Comma separated list of hosts to ping [not set]
-# filter: Capture filter syntax [not set]
+# ping:  Comma separated list of hosts to background ping [not set]
+# filter: tcpdump style capture filter [not set]
 
 echo "Debug: Number of arguments: $#" >&2
 echo "Debug: All arguments:" >&2
@@ -14,9 +14,14 @@ for i in $(seq 1 $#); do
 done
 
 # Fixed values (not exposed as parameters)
+
+# sleep for 30 seconds between pings
 PING_INTERVAL=30
+# rotate 24 capture files by time or size, which ever comes first
 FILES=24
+# 1 hour
 INTERVAL=3600
+# 200MB
 FILESIZE=200
 
 # First argument is interface
@@ -52,7 +57,7 @@ ping_monitor() {
                 continue
             fi
             
-            # Perform a quiet ping, suppress output
+            # Perform a quiet ping
             ping -c 1 -w 2 -q "$host" &> /dev/null
         done
         sleep "$PING_INTERVAL"
@@ -72,11 +77,11 @@ if [ -n "$PING" ]; then
     fi
 fi
 
-echo "Debug: Final values:" >&2
+echo "Using Values:" >&2
 echo "INTERFACE=$INTERFACE" >&2
 echo "PING=$PING" >&2
 echo "FILTER=$FILTER" >&2
 
-nohup dumpcap -b files:${FILES} -b filesize:${FILESIZE_KB} -b interval:${INTERVAL} -w /tmp/${HOSTNAME}_$(date +%Y%m%d_%H%M%S).pcap -i "$INTERFACE" -f "${FILTER}"  > /dev/null 2>&1 &    
+nohup dumpcap -b files:${FILES} -b filesize:${FILESIZE_KB} -b interval:${INTERVAL} -w /tmp/${HOSTNAME}_.pcap -i "$INTERFACE" -f "${FILTER}"  > /dev/null 2>&1 &    
  
 sleep infinity
