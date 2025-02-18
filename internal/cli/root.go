@@ -27,6 +27,12 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
+	// Bind environment variable to viper
+	viper.BindEnv("remote_catalog_url", "REMOTE_CATALOG_URL")
+
+	// Set up remote catalog URL from config
+	catalog.RemoteCatalogURL = viper.GetString("remote_catalog_url")
+
 	scripts, err := catalog.List()
 	if err != nil {
 		log.Fatal(err)

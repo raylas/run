@@ -3,7 +3,6 @@ package catalog
 import (
 	"embed"
 	"fmt"
-	"log"
 )
 
 //go:embed *
@@ -30,16 +29,12 @@ func List() ([]string, error) {
 
 	// If remote catalog URL is set, fetch and add those scripts
 	if RemoteCatalogURL != "" {
-		log.Printf("Fetching remote catalog from: %s", RemoteCatalogURL)
+		fmt.Printf("Fetching remote catalog from: %s", RemoteCatalogURL)
 		remoteScripts, err := ListRemote()
 		if err != nil {
-			log.Printf("Error fetching remote catalog: %v", err)
 			return scripts, fmt.Errorf("error fetching remote catalog: %w", err)
 		}
-		log.Printf("Found remote scripts: %v", remoteScripts)
 		scripts = append(scripts, remoteScripts...)
-	} else {
-		log.Printf("No remote catalog URL set")
 	}
 
 	return scripts, nil
@@ -54,10 +49,8 @@ func Read(name string) ([]byte, error) {
 
 	// If not found in embedded and we have a remote URL, try remote
 	if RemoteCatalogURL != "" {
-		log.Printf("Fetching remote script: %s", name)
 		bytes, err := ReadRemote(name)
 		if err != nil {
-			log.Printf("Error fetching remote script: %v", err)
 			return nil, fmt.Errorf("script not found in embedded or remote catalog: %s", name)
 		}
 		return bytes, nil

@@ -3,7 +3,6 @@ package catalog
 import (
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"path/filepath"
 	"strings"
@@ -21,6 +20,7 @@ func getRawURL(pkg string) (string, error) {
 		return "", fmt.Errorf("invalid package path: %s", pkg)
 	}
 
+	// Is there a package that already does this?
 	// Handle different Git hosting services
 	switch parts[0] {
 	case "github.com":
@@ -46,32 +46,26 @@ func ListRemote() ([]string, error) {
 	}
 
 	fullURL := rawURL + "/index"
-	log.Printf("Fetching remote index from: %s", fullURL)
 
 	resp, err := http.Get(fullURL)
 	if err != nil {
-		log.Printf("HTTP error: %v", err)
-		return nil, err
+		return nil, fmt.Errorf("failed to fetch remote catalog index: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		log.Printf("HTTP status not OK: %s", resp.Status)
-		return nil, fmt.Errorf("failed to fetch remote catalog index: %s", resp.Status)
+		return nil, fmt.Errorf("status not OK: %s", resp.Status)
 	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		log.Printf("Error reading response body: %v", err)
-		return nil, err
+		return nil, fmt.Errorf("failed to read response body: %w", err)
 	}
 
 	content := string(body)
-	log.Printf("Raw index content: %q", content)
 
 	// Assuming the index is a newline-separated list of script names
 	scripts := strings.Split(strings.TrimSpace(content), "\n")
-	log.Printf("Parsed scripts: %v", scripts)
 
 	return scripts, nil
 }
