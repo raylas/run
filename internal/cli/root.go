@@ -25,13 +25,10 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig)
+	cobra.OnInitialize(config.LoadDefaults)
 
-	// Bind environment variable to viper
-	viper.BindEnv("remote_catalog_url", "REMOTE_CATALOG_URL")
-
-	// Set up remote catalog URL from config
-	catalog.RemoteCatalogURL = viper.GetString("remote_catalog_url")
+	viper.SetEnvPrefix("run")
+	viper.AutomaticEnv()
 
 	scripts, err := catalog.List()
 	if err != nil {
@@ -57,11 +54,4 @@ func init() {
 	rootCmd.CompletionOptions.HiddenDefaultCmd = true
 
 	rootCmd.Version = config.Version + " (" + config.Commit + ")"
-}
-
-func initConfig() {
-	config.LoadDefaults()
-
-	viper.SetEnvPrefix("raylas/run")
-	viper.AutomaticEnv()
 }

@@ -3,14 +3,12 @@ package catalog
 import (
 	"embed"
 	"fmt"
+
+	"github.com/spf13/viper"
 )
 
 //go:embed *
 var embeddedCatalog embed.FS
-
-// RemoteCatalogURL should be a Go-style package reference, e.g.:
-// github.com/username/repo
-var RemoteCatalogURL string
 
 func List() ([]string, error) {
 	// Get embedded scripts
@@ -28,8 +26,11 @@ func List() ([]string, error) {
 	}
 
 	// If remote catalog URL is set, fetch and add those scripts
-	if RemoteCatalogURL != "" {
-		fmt.Printf("Fetching remote catalog from: %s", RemoteCatalogURL)
+	//
+	// RUN_REMOTE_CATALOG_URL should be a Go-style package reference, e.g.:
+	// github.com/username/repo
+	if viper.GetString("remote_catalog_url") != "" {
+		fmt.Printf("Fetching remote catalog from: %s", viper.GetString("remote_catalog_url"))
 		remoteScripts, err := ListRemote()
 		if err != nil {
 			return scripts, fmt.Errorf("error fetching remote catalog: %w", err)
@@ -48,7 +49,7 @@ func Read(name string) ([]byte, error) {
 	}
 
 	// If not found in embedded and we have a remote URL, try remote
-	if RemoteCatalogURL != "" {
+	if viper.GetString("remote_catalog_url") != "" {
 		bytes, err := ReadRemote(name)
 		if err != nil {
 			return nil, fmt.Errorf("script not found in embedded or remote catalog: %s", name)

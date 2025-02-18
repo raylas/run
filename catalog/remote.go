@@ -6,6 +6,8 @@ import (
 	"net/http"
 	"path/filepath"
 	"strings"
+
+	"github.com/spf13/viper"
 )
 
 // Convert Go-style package reference to raw URL
@@ -40,7 +42,7 @@ func getRawURL(pkg string) (string, error) {
 
 // ListRemote fetches the list of available scripts from the remote catalog
 func ListRemote() ([]string, error) {
-	rawURL, err := getRawURL(RemoteCatalogURL)
+	rawURL, err := getRawURL(viper.GetString("remote_catalog_url"))
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse remote URL: %w", err)
 	}
@@ -75,7 +77,7 @@ func ReadRemote(name string) ([]byte, error) {
 	// Sanitize the script name to prevent directory traversal
 	name = filepath.Base(name)
 
-	rawURL, err := getRawURL(RemoteCatalogURL)
+	rawURL, err := getRawURL(viper.GetString("remote_catalog_url"))
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse remote URL: %w", err)
 	}

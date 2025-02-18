@@ -25,7 +25,7 @@ func Run(ctx context.Context, attach, hostNetwork, capture bool, secretEnv, secr
 	}
 	pc := c.CoreV1().Pods(viper.GetString("kubernetes.namespace"))
 
-	nameRoot := "raylas-run-" + name
+	nameRoot := "run-" + name
 	timestamp := fmt.Sprint(time.Now().Unix())
 
 	container := corev1.Container{
@@ -54,7 +54,7 @@ func Run(ctx context.Context, attach, hostNetwork, capture bool, secretEnv, secr
 		ObjectMeta: metav1.ObjectMeta{
 			Name: nameRoot + "-" + timestamp[len(timestamp)-6:],
 			Labels: map[string]string{
-				"raylas-run.linecard.io-script": name,
+				"run-script": name,
 			},
 		},
 		Spec: corev1.PodSpec{
