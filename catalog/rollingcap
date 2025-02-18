@@ -84,5 +84,4 @@ echo "PING=$PING" >&2
 echo "FILTER=$FILTER" >&2
 
 nohup dumpcap -b files:${FILES} -b filesize:${FILESIZE_KB} -b interval:${INTERVAL} -w /tmp/${HOSTNAME}_.pcap -i "$INTERFACE" -f "${FILTER}"  > /dev/null 2>&1 &    
- 
 sleep infinity
