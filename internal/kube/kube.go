@@ -13,7 +13,7 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 )
 
-func Run(ctx context.Context, attach, hostNetwork bool, secretEnv, secretFile []string, cmd, name string) (string, error) {
+func Run(ctx context.Context, attach, hostNetwork, capture bool, secretEnv, secretFile []string, cmd, name string) (string, error) {
 	config, err := clientcmd.BuildConfigFromFlags("", viper.GetString("kubernetes.config_path"))
 	if err != nil {
 		return "", err
@@ -25,29 +25,40 @@ func Run(ctx context.Context, attach, hostNetwork bool, secretEnv, secretFile []
 	}
 	pc := c.CoreV1().Pods(viper.GetString("kubernetes.namespace"))
 
-	nameRoot := "raylas/run-" + name
+	nameRoot := "raylas-run-" + name
 	timestamp := fmt.Sprint(time.Now().Unix())
+
+	container := corev1.Container{
+		Name:            nameRoot,
+		Image:           viper.GetString("image"),
+		ImagePullPolicy: corev1.PullIfNotPresent,
+		EnvFrom:         envFrom(secretEnv),
+		Command:         viper.GetStringSlice("entrypoint"),
+		Args:            []string{cmd},
+		Stdin:           attach,
+		TTY:             attach,
+	}
+
+	if capture {
+		container.SecurityContext = &corev1.SecurityContext{
+			Capabilities: &corev1.Capabilities{
+				Add: []corev1.Capability{
+					"NET_RAW",
+					"NET_ADMIN",
+				},
+			},
+		}
+	}
 
 	spec := corev1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: nameRoot + "-" + timestamp[len(timestamp)-6:],
 			Labels: map[string]string{
-				"raylas/run.linecard.io/script": name,
+				"raylas-run.linecard.io-script": name,
 			},
 		},
 		Spec: corev1.PodSpec{
-			Containers: []corev1.Container{
-				{
-					Name:            nameRoot,
-					Image:           viper.GetString("image"),
-					ImagePullPolicy: corev1.PullIfNotPresent,
-					EnvFrom:         envFrom(secretEnv),
-					Command:         viper.GetStringSlice("entrypoint"),
-					Args:            []string{cmd},
-					Stdin:           attach,
-					TTY:             attach,
-				},
-			},
+			Containers:    []corev1.Container{container},
 			HostNetwork:   hostNetwork,
 			RestartPolicy: corev1.RestartPolicyNever,
 		},
