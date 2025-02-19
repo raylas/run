@@ -26,11 +26,11 @@ type CacheEntry struct {
 // getCacheDir returns the cache directory for run
 func getCacheDir() (string, error) {
 	// on macos, the cache directory is in ~/Library/Caches
-	cacheDir, err := os.UserCacheDir()
+	userCacheDir, err := os.UserCacheDir()
 	if err != nil {
 		return "", err
 	}
-	cachePath := filepath.Join(cacheDir, "run-catalog") // Using our constant
+	cachePath := filepath.Join(userCacheDir, cacheDir)
 	if err := os.MkdirAll(cachePath, 0755); err != nil {
 		return "", err
 	}
@@ -54,6 +54,8 @@ func hashURL(url string) string {
 }
 
 // getCachedResponse checks if a valid cached response exists
+// returns the content, true if the cache is valid, and nil error
+// if the cache is expired, it removes the file and returns false
 func getCachedResponse(url string) ([]byte, bool, error) {
 	cacheDir, err := getCacheDir()
 	if err != nil {
@@ -76,14 +78,14 @@ func getCachedResponse(url string) ([]byte, bool, error) {
 	}
 
 	if time.Now().After(entry.Expiration) {
-		_ = os.Remove(cacheFile) // Expired, remove it
+		_ = os.Remove(cacheFile)
 		return nil, false, nil
 	}
 
 	return entry.Content, true, nil
 }
 
-// cacheResponse saves a response to the cache
+// cacheResponse saves a valid response to the cache
 func cacheResponse(url string, content []byte, ttl time.Duration) error {
 	cacheDir, err := getCacheDir()
 	if err != nil {
