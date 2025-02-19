@@ -25,6 +25,7 @@ type CacheEntry struct {
 
 // getCacheDir returns the cache directory for run
 func getCacheDir() (string, error) {
+	// on macos, the cache directory is in ~/Library/Caches
 	cacheDir, err := os.UserCacheDir()
 	if err != nil {
 		return "", err
@@ -98,11 +99,9 @@ func cacheResponse(url string, content []byte, ttl time.Duration) error {
 // fetchURL fetches the URL, checking the cache first
 func fetchURL(url string, ttl time.Duration) ([]byte, error) {
 	if cachedData, found, err := getCachedResponse(url); err == nil && found {
-		fmt.Println("Cache hit")
 		return cachedData, nil
 	}
 
-	fmt.Println("Fetching from network")
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil, err
@@ -119,7 +118,7 @@ func fetchURL(url string, ttl time.Duration) ([]byte, error) {
 	}
 
 	if err := cacheResponse(url, body, ttl); err != nil {
-		// Log cache errors but don't fail the request
+		// Log cache persistence errors but don't fail the request
 		fmt.Fprintf(os.Stderr, "Warning: failed to cache response: %v\n", err)
 	}
 
