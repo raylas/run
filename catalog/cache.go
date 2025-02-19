@@ -37,6 +37,15 @@ func getCacheDir() (string, error) {
 	return cachePath, nil
 }
 
+func ClearCache() error {
+	cacheDir, err := getCacheDir()
+	if err != nil {
+		return err
+	}
+	fmt.Println("Clearing cache in", cacheDir)
+	return os.RemoveAll(cacheDir)
+}
+
 // hashURL creates a hashed filename for a URL
 func hashURL(url string) string {
 	h := sha1.New()
