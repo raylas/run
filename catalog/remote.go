@@ -2,8 +2,6 @@ package catalog
 
 import (
 	"fmt"
-	"io"
-	"net/http"
 	"path/filepath"
 	"strings"
 
@@ -49,26 +47,14 @@ func ListRemote() ([]string, error) {
 
 	fullURL := rawURL + "/index"
 
-	resp, err := http.Get(fullURL)
+	// Use cached fetchURL instead of direct http.Get
+	body, err := fetchURL(fullURL, cacheTTL)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fetch remote catalog index: %w", err)
 	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("status not OK: %s", resp.Status)
-	}
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read response body: %w", err)
-	}
-
-	content := string(body)
 
 	// Assuming the index is a newline-separated list of script names
-	scripts := strings.Split(strings.TrimSpace(content), "\n")
-
+	scripts := strings.Split(strings.TrimSpace(string(body)), "\n")
 	return scripts, nil
 }
 
@@ -82,15 +68,6 @@ func ReadRemote(name string) ([]byte, error) {
 		return nil, fmt.Errorf("failed to parse remote URL: %w", err)
 	}
 
-	resp, err := http.Get(rawURL + "/" + name)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("failed to fetch remote script: %s", resp.Status)
-	}
-
-	return io.ReadAll(resp.Body)
+	// Use cached fetchURL instead of direct http.Get
+	return fetchURL(rawURL+"/"+name, cacheTTL)
 }

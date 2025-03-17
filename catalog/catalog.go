@@ -19,7 +19,7 @@ func List() ([]string, error) {
 
 	var scripts []string
 	for _, file := range files {
-		if file.Name() == "catalog.go" || file.Name() == "remote.go" || file.IsDir() {
+		if file.Name() == "catalog.go" || file.Name() == "remote.go" || file.Name() == "cache.go" || file.IsDir() {
 			continue
 		}
 		scripts = append(scripts, file.Name())
