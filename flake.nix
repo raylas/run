@@ -25,12 +25,12 @@
         in
         rec {
           packages = {
-            default = pkgs.buildGo122Module {
+            default = pkgs.buildGoModule {
               pname = "run";
               inherit version;
               src = ./.;
               subPackages = [ "cmd/run" ];
-              vendorHash = "sha256-hCeOLtylQ1Jb1u43pB+2dHU3dB2CsvlOfdusmYNSxLw=";
+              vendorHash = "sha256-UWnBSscTd6NXUK+TT6u/2/YbBt0wZ+0kjK8LbyngoRc=";
             };
           };
 
@@ -39,13 +39,15 @@
             program = "${packages.default}/bin/run";
           };
 
-          devShell = pkgs.mkShell {
+          devShell = pkgs.mkShellNoCC {
             buildInputs = with pkgs; [
               go
               go-tools
               gotools
               gopls
             ];
+
+            CGO_ENABLED = "0";
           };
         }
       );

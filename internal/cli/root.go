@@ -38,13 +38,13 @@ func init() {
 	for _, s := range scripts {
 		contents, err := catalog.Read(s)
 		if err != nil {
-			fmt.Println(output.Colorize(output.Red, err.Error()))
+			fmt.Println(output.Colorize(output.Red, "%v", err))
 			continue
 		}
 
 		desc, args, err := parse.Args(contents)
 		if err != nil {
-			fmt.Println(output.Colorize(output.Red, err.Error()))
+			fmt.Println(output.Colorize(output.Red, "%v", err))
 			continue
 		}
 
