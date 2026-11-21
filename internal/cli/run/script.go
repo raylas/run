@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/raylas/run/catalog"
-	"github.com/raylas/run/internal/docker"
-	"github.com/raylas/run/internal/equip"
-	"github.com/raylas/run/internal/kube"
-	"github.com/raylas/run/internal/parse"
 	"github.com/spf13/cobra"
+	"go.rmdd.net/run/catalog"
+	"go.rmdd.net/run/internal/docker"
+	"go.rmdd.net/run/internal/equip"
+	"go.rmdd.net/run/internal/kube"
+	"go.rmdd.net/run/internal/parse"
 )
 
 func NewScriptCmd(name, desc string, scriptArgs map[int]parse.Arg) *cobra.Command {

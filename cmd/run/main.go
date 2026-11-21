@@ -1,6 +1,6 @@
 package main
 
-import "github.com/raylas/run/internal/cli"
+import "go.rmdd.net/run/internal/cli"
 
 func main() {
 	cli.Execute()

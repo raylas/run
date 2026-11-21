@@ -1,4 +1,4 @@
-module github.com/raylas/run
+module go.rmdd.net/run
 
 go 1.22.1
 

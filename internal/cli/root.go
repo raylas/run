@@ -5,11 +5,11 @@ import (
 	"log"
 	"os"
 
-	"github.com/raylas/run/catalog"
-	runcmd "github.com/raylas/run/internal/cli/run"
-	"github.com/raylas/run/internal/config"
-	"github.com/raylas/run/internal/output"
-	"github.com/raylas/run/internal/parse"
+	"go.rmdd.net/run/catalog"
+	runcmd "go.rmdd.net/run/internal/cli/run"
+	"go.rmdd.net/run/internal/config"
+	"go.rmdd.net/run/internal/output"
+	"go.rmdd.net/run/internal/parse"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
